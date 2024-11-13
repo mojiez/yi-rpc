@@ -10,7 +10,6 @@ import com.atyichen.yirpc.proxy.ServiceProxyFactory;
  */
 public class EasyConsumerExample {
 //    public static void main(String[] args) {
-//        // todo 需要获取UserService的实现类对象
 //        UserService userService = null;
 //
 //        // 使用静态代理

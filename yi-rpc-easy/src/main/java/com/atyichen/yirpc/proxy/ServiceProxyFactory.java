@@ -9,12 +9,12 @@ import java.lang.reflect.Proxy;
 public class ServiceProxyFactory {
     /**
      * 主要通过 Proxy.newProxyInstance() 方法为指定类型创建代理对象
-     * todo Proxy.newProxyInstance() 的三个参数是干什么的
      * @param serviceClass
      * @return
      * @param <T>
      */
     public static <T> T getProxy(Class<T> serviceClass) {
+        // 类加载器  指定需要代理的接口  指定代理处理器
         return (T) Proxy.newProxyInstance(serviceClass.getClassLoader(), new Class[]{serviceClass}, new ServiceProxy());
     }
 }

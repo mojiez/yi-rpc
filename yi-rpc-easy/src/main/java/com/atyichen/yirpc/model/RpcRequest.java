@@ -6,7 +6,6 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.io.Serializable;
-// todo implements Serializable有什么用
 @Data
 @AllArgsConstructor
 @NoArgsConstructor

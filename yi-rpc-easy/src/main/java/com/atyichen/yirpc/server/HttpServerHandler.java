@@ -24,9 +24,25 @@ import java.lang.reflect.Method;
 
 /**
  * Http请求处理
- * todo Handler<HttpServerRequest> 的作用是什么
  * Vert.x通过实现Handler<HttpServerRequest>接口来自定义请求处理器
  * request.bodyHandler来异步处理请求
+ */
+
+/*
+// Handler是一个函数式接口
+public interface Handler<E> {
+    void handle(E event);
+}
+
+// HTTP请求处理示例
+vertx.createHttpServer()
+    .requestHandler(request -> {  // 这就是一个Handler
+        // 处理请求
+        request.response()
+            .putHeader("content-type", "text/plain")
+            .end("Hello World!");
+    })
+    .listen(8080);
  */
 public class HttpServerHandler implements Handler<HttpServerRequest> {
 
