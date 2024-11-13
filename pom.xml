@@ -15,6 +15,7 @@
     <module>example-provider</module>
     <module>yi-rpc-easy</module>
     <module>vertx-learning</module>
+    <module>yi-rpc-core</module>
   </modules>
 
   <properties>
