@@ -2,10 +2,13 @@ package com.atyichen.yirpc.proxy;
 
 import cn.hutool.http.HttpRequest;
 import cn.hutool.http.HttpResponse;
+import com.atyichen.yirpc.RpcApplication;
+import com.atyichen.yirpc.config.RpcConfig;
 import com.atyichen.yirpc.model.RpcRequest;
 import com.atyichen.yirpc.model.RpcResponse;
 import com.atyichen.yirpc.serializer.JdkSerializer;
 import com.atyichen.yirpc.serializer.Serializer;
+import com.atyichen.yirpc.serializer.SerializerFactory;
 
 import java.io.IOException;
 import java.lang.reflect.InvocationHandler;
@@ -43,8 +46,12 @@ public class ServiceProxy implements InvocationHandler {
      */
     @Override
     public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
-        // 指定序列化器
-        Serializer serializer = new JdkSerializer();
+//        // 指定序列化器
+//        Serializer serializer = new JdkSerializer();
+
+        // 读取配置 + 使用工厂 获取序列化器实现类
+        RpcConfig rpcConfig = RpcApplication.getRpcConfig();
+        final Serializer serializer = SerializerFactory.getInstance(rpcConfig.getSerializer());
 
         // 构造请求
         RpcRequest rpcRequest = RpcRequest.builder()

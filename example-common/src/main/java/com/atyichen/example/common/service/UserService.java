@@ -9,4 +9,11 @@ public interface UserService {
      * @return
      */
     User getUser(User user);
+    /**
+     * 新方法 获取数字
+     */
+    default short getNumber() {
+        System.out.println("没有使用代理");
+        return 1;
+    }
 }

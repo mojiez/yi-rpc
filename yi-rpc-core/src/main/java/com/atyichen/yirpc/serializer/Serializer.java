@@ -8,7 +8,7 @@ import java.io.IOException;
 public interface Serializer {
     /**
      * 序列化
-     * @param Object
+     * @param
      * @return
      * @param <T>
      * @throws IOException

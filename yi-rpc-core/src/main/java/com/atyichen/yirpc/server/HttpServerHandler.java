@@ -8,11 +8,13 @@ package com.atyichen.yirpc.server;
 4. 对返回结果进行封装和序列化，写入到相应中
  */
 
+import com.atyichen.yirpc.RpcApplication;
 import com.atyichen.yirpc.model.RpcRequest;
 import com.atyichen.yirpc.model.RpcResponse;
 import com.atyichen.yirpc.registry.LocalRegistry;
 import com.atyichen.yirpc.serializer.JdkSerializer;
 import com.atyichen.yirpc.serializer.Serializer;
+import com.atyichen.yirpc.serializer.SerializerFactory;
 import io.vertx.core.Handler;
 import io.vertx.core.buffer.Buffer;
 import io.vertx.core.http.HttpServerRequest;
@@ -49,7 +51,7 @@ public class HttpServerHandler implements Handler<HttpServerRequest> {
     @Override
     public void handle(HttpServerRequest request) {
         // 指定序列化器
-        final Serializer serializer = new JdkSerializer();
+        final Serializer serializer = SerializerFactory.getInstance(RpcApplication.getRpcConfig().getSerializer());
 
         // 记录日志
         System.out.println("Received request: " + request.method() + " " + request.uri());

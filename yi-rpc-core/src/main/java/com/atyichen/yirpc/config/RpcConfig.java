@@ -1,5 +1,6 @@
 package com.atyichen.yirpc.config;
 
+import com.atyichen.yirpc.serializer.SerializerKeys;
 import lombok.Data;
 
 /**
@@ -13,4 +14,12 @@ public class RpcConfig {
     private String version = "1.0";
     private String serverHost = "localhost";
     private Integer serverPort = 8080;
+    /**
+     * 模拟调用
+     */
+    private boolean mock = false;
+    /**
+     * 序列化器名称
+     */
+    private String serializer = SerializerKeys.JDK;
 }

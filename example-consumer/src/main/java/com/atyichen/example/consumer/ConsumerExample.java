@@ -1,7 +1,9 @@
 package com.atyichen.example.consumer;
 
+import com.atyichen.example.common.service.UserService;
 import com.atyichen.yirpc.config.RpcConfig;
 import com.atyichen.yirpc.constant.RpcConstant;
+import com.atyichen.yirpc.proxy.ServiceProxyFactory;
 import com.atyichen.yirpc.utils.ConfigUtils;
 
 /**
@@ -15,6 +17,9 @@ public class ConsumerExample {
         RpcConfig rpcConfig = ConfigUtils.loadConfig(RpcConfig.class, RpcConstant.DEFAULT_CONFIG_PREFIX);
         System.out.println(rpcConfig);
 
-
+        // 编写调用userService.getNumber
+        UserService proxy = ServiceProxyFactory.getProxy(UserService.class);
+        short number = proxy.getNumber();
+        System.out.println(number);
     }
 }
