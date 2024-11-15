@@ -1,11 +1,16 @@
 package com.atyichen.yirpc.proxy;
 
+import cn.hutool.core.collection.CollUtil;
 import cn.hutool.http.HttpRequest;
 import cn.hutool.http.HttpResponse;
 import com.atyichen.yirpc.RpcApplication;
 import com.atyichen.yirpc.config.RpcConfig;
+import com.atyichen.yirpc.constant.RpcConstant;
 import com.atyichen.yirpc.model.RpcRequest;
 import com.atyichen.yirpc.model.RpcResponse;
+import com.atyichen.yirpc.model.ServiceMetaInfo;
+import com.atyichen.yirpc.registry.Registry;
+import com.atyichen.yirpc.registry.RegistryFactory;
 import com.atyichen.yirpc.serializer.JdkSerializer;
 import com.atyichen.yirpc.serializer.Serializer;
 import com.atyichen.yirpc.serializer.SerializerFactory;
@@ -13,6 +18,7 @@ import com.atyichen.yirpc.serializer.SerializerFactory;
 import java.io.IOException;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
+import java.util.List;
 
 /**
  * 根据要生成的对象的类型， 自动生成一个代理对象
@@ -105,7 +111,21 @@ public class ServiceProxy implements InvocationHandler {
                 }
             }
              */
-            try(HttpResponse response = HttpRequest.post("http://localhost:8080")
+
+            // 从注册中心中获取服务提供者的请求地址
+            String registryKey = rpcConfig.getRegistryConfig().getRegistry();
+            Registry registry = RegistryFactory.getInstance(registryKey);
+            ServiceMetaInfo serviceMetaInfo = new ServiceMetaInfo();
+            serviceMetaInfo.setServiceName(method.getDeclaringClass().getName());
+            serviceMetaInfo.setServiceVersion(RpcConstant.DEFAULT_SERVICE_VERSION);
+            List<ServiceMetaInfo> serviceMetaInfoList = registry.serviceDiscovery(serviceMetaInfo.getServiceKey());
+            if (CollUtil.isEmpty(serviceMetaInfoList)) {
+                throw new RuntimeException("暂无服务地址");
+            }
+            ServiceMetaInfo selectedServiceMetaInfo = serviceMetaInfoList.get(0);
+
+
+            try(HttpResponse response = HttpRequest.post(selectedServiceMetaInfo.getServiceAddress())
                     .body(bodyBytes)
                     .execute()) {
                 result = response.bodyBytes();

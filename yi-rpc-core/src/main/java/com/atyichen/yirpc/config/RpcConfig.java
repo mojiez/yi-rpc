@@ -20,6 +20,11 @@ public class RpcConfig {
     private boolean mock = false;
     /**
      * 序列化器名称
+     * 如果在properties中更改， 会被覆盖
      */
     private String serializer = SerializerKeys.JDK;
+    /**
+     * 注册中心配置
+     */
+    private RegistryConfig registryConfig = new RegistryConfig();
 }

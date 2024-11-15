@@ -1,7 +1,11 @@
 package com.atyichen.yirpc;
 
+import com.atyichen.yirpc.config.RegistryConfig;
 import com.atyichen.yirpc.config.RpcConfig;
 import com.atyichen.yirpc.constant.RpcConstant;
+import com.atyichen.yirpc.registry.Registry;
+import com.atyichen.yirpc.registry.RegistryFactory;
+import com.atyichen.yirpc.serializer.Serializer;
 import com.atyichen.yirpc.utils.ConfigUtils;
 import lombok.extern.slf4j.Slf4j;
 
@@ -26,6 +30,12 @@ public class RpcApplication {
     private static void init(RpcConfig newRpcConfig) {
         rpcConfig = newRpcConfig;
         log.info("rpc init, config = {}", newRpcConfig.toString());
+
+        // 注册中心初始化
+        RegistryConfig registryConfig = rpcConfig.getRegistryConfig();
+        Registry registry = RegistryFactory.getInstance(registryConfig.getRegistry());
+        registry.init(registryConfig); // 初始化了etcd客户端 client
+        log.info("registry init, config = {}", registryConfig);
     }
 
     /**

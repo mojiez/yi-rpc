@@ -57,6 +57,7 @@ public class SerializerFactory {
     private static final Serializer DEFAULT_SERIALIZER = new JdkSerializer();
 
     // 获取实例
+    // 通过配置文件中定义的常量关键词， 寻找对应的实现类
     public static Serializer getInstance(String key) {
         return SpiLoader.getInstance(Serializer.class, key);
     }

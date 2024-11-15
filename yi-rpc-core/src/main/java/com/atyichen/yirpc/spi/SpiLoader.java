@@ -1,6 +1,5 @@
 package com.atyichen.yirpc.spi;
 
-import ch.qos.logback.core.encoder.EchoEncoder;
 import cn.hutool.core.io.resource.ResourceUtil;
 import com.atyichen.yirpc.serializer.Serializer;
 import lombok.extern.slf4j.Slf4j;
