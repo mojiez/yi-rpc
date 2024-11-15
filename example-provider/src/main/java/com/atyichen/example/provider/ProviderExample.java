@@ -21,6 +21,6 @@ public class ProviderExample {
         // 启动web服务
         HttpServer httpServer = new VertxHttpServer();
         httpServer.doStart(RpcApplication.getRpcConfig().getServerPort());
-        System.out.println("hello");
+        System.out.println("web服务成功启动");
     }
 }

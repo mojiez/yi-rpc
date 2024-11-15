@@ -1,0 +1,3 @@
+json=com.atyichen.yirpc.serializer.JsonSerializer
+kryo=com.atyichen.yirpc.serializer.KryoSerializer
+hessian=com.atyichen.yirpc.serializer.HessianSerializer

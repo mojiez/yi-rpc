@@ -1,4 +1,2 @@
 jdk=com.atyichen.yirpc.serializer.JdkSerializer
 hessian=com.atyichen.yirpc.serializer.HessianSerializer
-json=com.atyichen.yirpc.serializer.JsonSerializer
-kryo=com.atyichen.yirpc.serializer.KryoSerializer

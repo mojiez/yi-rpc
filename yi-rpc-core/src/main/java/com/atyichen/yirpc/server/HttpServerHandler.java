@@ -19,6 +19,7 @@ import io.vertx.core.Handler;
 import io.vertx.core.buffer.Buffer;
 import io.vertx.core.http.HttpServerRequest;
 import io.vertx.core.http.HttpServerResponse;
+import lombok.extern.slf4j.Slf4j;
 
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
@@ -46,13 +47,14 @@ vertx.createHttpServer()
     })
     .listen(8080);
  */
+@Slf4j
 public class HttpServerHandler implements Handler<HttpServerRequest> {
 
     @Override
     public void handle(HttpServerRequest request) {
         // 指定序列化器
         final Serializer serializer = SerializerFactory.getInstance(RpcApplication.getRpcConfig().getSerializer());
-
+        log.info("加载的序列化器类型 {}", serializer.getClass());
         // 记录日志
         System.out.println("Received request: " + request.method() + " " + request.uri());
 
@@ -72,7 +74,12 @@ public class HttpServerHandler implements Handler<HttpServerRequest> {
             try {
                 rpcRequest = serializer.deserialize(bytes, RpcRequest.class);
             } catch (IOException e) {
-                throw new RuntimeException(e);
+//                throw new RuntimeException(e);
+                // 只有发生IOException时才会进入这个块
+                System.out.println("2. 捕获到IO异常");
+                // 如果这里不抛出异常，而是仅打印日志
+                log.error("反序列化失败", e);
+                // 会继续执行try-catch后的代码
             }
 
             // 构造相应结果对象

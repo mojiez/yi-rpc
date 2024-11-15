@@ -78,7 +78,7 @@ public class SpiLoader {
     /**
      * 扫描路径
      */
-    private static final String[] SCAN_DIRS = new String[]{RPC_CUSTOM_SPI_DIR, RPC_SYSTEM_SPI_DIR};
+    private static final String[] SCAN_DIRS = new String[]{RPC_SYSTEM_SPI_DIR, RPC_CUSTOM_SPI_DIR};
 
     /**
      * 动态加载的类列表
@@ -111,6 +111,7 @@ public class SpiLoader {
         // 返回的是一个 Map
         log.info("记载类型为 {} 的SPI", loadClass.getName());
         // 扫描路径， 用户自定义的SPI优先级高于系统SPI
+        // key => 实现类的类对象
         Map<String, Class<?>> keyClassMap = new HashMap<>();
         // todo 这里是用户的配置应该覆盖掉RPC框架的配置（如果同名）
         for (String scanDir : SCAN_DIRS) {
@@ -142,7 +143,6 @@ public class SpiLoader {
                             String key = strArray[0];
                             String className = strArray[1];
                             // 根据完整的包路径就能得到 这个类 的 类对象 使用 Class.forName
-                            // todo 这里如果出现相同key 由于key是String 那么后面的实现类就会覆盖前面的实现类
                             keyClassMap.put(key, Class.forName(className));
                         }
                     }
@@ -160,7 +160,21 @@ public class SpiLoader {
      * 获取某个接口的实例
      * 传入接口的类对象  传入实现类的key
      * 返回这个接口的实现类的实例
-     * todo 再理解下这个 T 就只在返回值那里定义了一下?
+     * 这样写好像确实是有问题的
+     * // 编译前
+     * public static <T> T getInstance(Class<?> tClass, String key)
+     *
+     * // 类型擦除后（实际运行时的代码）
+     * public static Object getInstance(Class tClass, String key) {
+     *     // ...
+     *     return (Object) instanceCache.get(key);
+     * }
+     *
+     * // 使用时编译器自动插入类型转换
+     * Serializer serializer = (Serializer) SpiLoader.getInstance(Serializer.class, "json");
+     *
+     * Class<?> 和 <T> 是没有关联的
+     *
      * @param tClass
      * @param key
      * @return
@@ -184,7 +198,7 @@ public class SpiLoader {
           单例模式
           private static Map<String, Object> instanceCache = new ConcurrentHashMap<>();
          */
-        // 得到的是类的完整包路径
+        // 得到的是类的完整包路径 从类对象 获取类的完整包路径， 再通过完整包路径实例化类
         String implClassName = aClass.getName();
 
         // 这里是单例实现（懒加载）， 如果有这个实现类的实例 就返回 如果没有就创建
@@ -195,6 +209,6 @@ public class SpiLoader {
                 throw new RuntimeException(String.format("%s 类实例化失败", implClassName));
             }
         }
-        return (T) instanceCache.get(key);
+        return (T) instanceCache.get(implClassName);
     }
 }
