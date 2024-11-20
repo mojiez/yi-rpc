@@ -13,7 +13,7 @@ public interface UserService {
      * 新方法 获取数字
      */
     default short getNumber() {
-        System.out.println("没有使用代理");
+        System.out.println("使用了代理， 代理发请求调用默认方法");
         return 1;
     }
 }

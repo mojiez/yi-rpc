@@ -26,5 +26,5 @@ public class RpcConfig {
     /**
      * 注册中心配置
      */
-    private RegistryConfig registryConfig = new RegistryConfig();
+    private RegistryConfig registryConfig = new RegistryConfig(); // 有默认值
 }
