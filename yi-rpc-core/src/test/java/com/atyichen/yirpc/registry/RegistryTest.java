@@ -77,4 +77,12 @@ public class RegistryTest {
         System.out.println("输出找到的端口");
         serviceMetaInfoList.forEach(metaInfo -> System.out.println(metaInfo.getServicePort()));
     }
+
+    @Test
+    public void testHeartBeat() throws Exception{
+        // init()方法中已经执行心跳检测了
+        register();
+        // 阻塞一分钟
+        Thread.sleep(60 * 1000L);
+    }
 }

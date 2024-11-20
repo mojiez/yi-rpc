@@ -27,6 +27,7 @@ public class ConsumerExample {
         UserService userServiceProxy = ServiceProxyFactory.getProxy(UserService.class);
         System.out.println(userServiceProxy.getNumber());
         System.out.println(userServiceProxy.getUser(user));
+        System.out.println(userServiceProxy.getUser(user));
     }
     public void test() {
         // 测试配置文件读取
