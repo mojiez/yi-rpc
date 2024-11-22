@@ -16,6 +16,23 @@ import com.atyichen.yirpc.utils.ConfigUtils;
  */
 public class ConsumerExample {
     public static void main(String[] args) {
+        tcpConsumer();
+    }
+    public static void tcpConsumer() {
+        RpcConfig rpcConfig = RpcApplication.getRpcConfig();
+        System.out.println(rpcConfig);
+
+        // 编写调用userService
+        User user = new User();
+        user.setName("zkjjj1115");
+
+        // 获取userService的代理实现类
+        UserService userServiceProxy = ServiceProxyFactory.getProxy(UserService.class);
+        System.out.println(userServiceProxy.getNumber());
+        System.out.println(userServiceProxy.getNumber());
+        System.out.println(userServiceProxy.getUser(user));
+    }
+    public static void httpConsumer() {
         RpcConfig rpcConfig = RpcApplication.getRpcConfig();
         System.out.println(rpcConfig);
 

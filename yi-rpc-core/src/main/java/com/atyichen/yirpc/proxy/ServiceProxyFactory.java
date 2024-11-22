@@ -18,7 +18,8 @@ public class ServiceProxyFactory {
     public static <T> T getProxy(Class<T> serviceClass) {
         // 类加载器  指定需要代理的接口  指定代理处理器
         if (RpcApplication.getRpcConfig().isMock()) return getMockProxy(serviceClass);
-        return (T) Proxy.newProxyInstance(serviceClass.getClassLoader(), new Class[]{serviceClass}, new ServiceProxy());
+        return (T) Proxy.newProxyInstance(serviceClass.getClassLoader(), new Class[]{serviceClass}, new TcpServiceProxy());
+//        return (T) Proxy.newProxyInstance(serviceClass.getClassLoader(), new Class[]{serviceClass}, new ServiceProxy());
     }
 
     private static <T> T getMockProxy(Class<T> serviceClass) {

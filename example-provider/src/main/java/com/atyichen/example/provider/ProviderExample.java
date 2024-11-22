@@ -10,6 +10,7 @@ import com.atyichen.yirpc.registry.Registry;
 import com.atyichen.yirpc.registry.RegistryFactory;
 import com.atyichen.yirpc.server.HttpServer;
 import com.atyichen.yirpc.server.VertxHttpServer;
+import com.atyichen.yirpc.server.tcp.VertxTcpServer;
 
 /**
  * @author mojie
@@ -18,6 +19,40 @@ import com.atyichen.yirpc.server.VertxHttpServer;
  */
 public class ProviderExample {
     public static void main(String[] args) {
+//        httpServer();
+        tcpServer();
+    }
+    public static void tcpServer() {
+        // RPC 框架初始化
+        RpcConfig rpcConfig = RpcApplication.getRpcConfig();
+        // 注册服务
+        String serviceName = UserService.class.getName();
+        LocalRegistry.register(serviceName, UserServiceImpl.class);
+
+        // 注册服务到注册中心
+        RegistryConfig registryConfig = rpcConfig.getRegistryConfig(); // 通过配置文件里的关键字指定
+        Registry registry = RegistryFactory.getInstance(registryConfig.getRegistry());
+        ServiceMetaInfo serviceMetaInfo = new ServiceMetaInfo();
+        serviceMetaInfo.setServiceName(serviceName);
+        serviceMetaInfo.setServiceVersion("1.0");
+        serviceMetaInfo.setServiceHost(rpcConfig.getServerHost());
+        serviceMetaInfo.setServicePort(rpcConfig.getServerPort());
+        try {
+            registry.register(serviceMetaInfo);
+        }catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+
+//        // 启动web服务
+//        HttpServer httpServer = new VertxHttpServer();
+//        httpServer.doStart(RpcApplication.getRpcConfig().getServerPort());
+//        System.out.println("web服务成功启动");
+        // 启动Tcp服务
+        HttpServer tcpServer = new VertxTcpServer();
+        tcpServer.doStart(RpcApplication.getRpcConfig().getServerPort());
+        System.out.println("tcp服务启动成功");
+    }
+    public static void httpServer() {
         // RPC 框架初始化
         RpcConfig rpcConfig = RpcApplication.getRpcConfig();
         // 注册服务
