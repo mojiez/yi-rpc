@@ -14,16 +14,19 @@ import com.atyichen.yirpc.registry.RegistryFactory;
 import com.atyichen.yirpc.serializer.JdkSerializer;
 import com.atyichen.yirpc.serializer.Serializer;
 import com.atyichen.yirpc.serializer.SerializerFactory;
+import lombok.extern.slf4j.Slf4j;
 
 import java.io.IOException;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
  * 根据要生成的对象的类型， 自动生成一个代理对象
  * 使用JDK动态代理（只能对接口进行代理）
  */
+@Slf4j
 public class ServiceProxy implements InvocationHandler {
     /**
      * 调用代理
@@ -118,10 +121,23 @@ public class ServiceProxy implements InvocationHandler {
             ServiceMetaInfo serviceMetaInfo = new ServiceMetaInfo();
             serviceMetaInfo.setServiceName(method.getDeclaringClass().getName());
             serviceMetaInfo.setServiceVersion(RpcConstant.DEFAULT_SERVICE_VERSION);
-            List<ServiceMetaInfo> serviceMetaInfoList = registry.serviceDiscovery(serviceMetaInfo.getServiceKey());
+            List<ServiceMetaInfo> serviceMetaInfoList = new ArrayList<>();
+            try {
+                serviceMetaInfoList = registry.serviceDiscovery(serviceMetaInfo.getServiceKey());
+                System.out.println("=== 3. 服务发现完成 ===");
+            } catch (Exception e) {
+                System.out.println("=== X. 服务发现失败: " + e.getMessage() + " ===");
+                throw e;
+            }
+//            log.info("获取到服务列表");
+            System.out.println("获取到服务列表");
             if (CollUtil.isEmpty(serviceMetaInfoList)) {
+//                log.info("服务列表为空");
+                System.out.println("服务列表为空");
                 throw new RuntimeException("暂无服务地址");
             }
+//            log.info("开始选择服务地址");
+            System.out.println("开始选择服务地址");
             ServiceMetaInfo selectedServiceMetaInfo = serviceMetaInfoList.get(0);
 
 
@@ -137,5 +153,10 @@ public class ServiceProxy implements InvocationHandler {
             e.printStackTrace();
         }
         return null;
+    }
+
+    @Override
+    public String toString() {
+        return "ServiceProxy{}";
     }
 }

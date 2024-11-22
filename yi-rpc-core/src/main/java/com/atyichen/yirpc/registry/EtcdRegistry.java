@@ -137,6 +137,7 @@ public class EtcdRegistry implements Registry {
 
     /**
      * 注册中心销毁， 项目关闭后释放资源
+     * 项目关闭自动释放资源
      */
     @Override
     public void destroy() {

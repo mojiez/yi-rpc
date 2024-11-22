@@ -26,7 +26,7 @@ public class ConsumerExample {
         // 获取userService的代理实现类
         UserService userServiceProxy = ServiceProxyFactory.getProxy(UserService.class);
         System.out.println(userServiceProxy.getNumber());
-        System.out.println(userServiceProxy.getUser(user));
+        System.out.println(userServiceProxy.getNumber());
         System.out.println(userServiceProxy.getUser(user));
     }
     public void test() {
