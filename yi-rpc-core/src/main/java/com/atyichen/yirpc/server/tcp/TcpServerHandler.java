@@ -57,7 +57,57 @@ public class TcpServerHandler implements Handler<NetSocket> {
         3. 继续执行后续代码
         4. 当请求体数据完全接收后，Event Loop（类似线程池） 分配线程执行回调
          */
-        netSocket.handler(buffer -> {
+//        netSocket.handler(buffer -> {
+//            // 接受请求， 解码
+//            ProtocolMessage<RpcRequest> protocolMessage;
+//            try {
+//                protocolMessage = (ProtocolMessage<RpcRequest>) ProtocolMessageDecoder.decoder(buffer);
+//            } catch (Exception e) {
+//                throw new RuntimeException("协议消息解码错误");
+//            }
+//
+//            RpcRequest rpcRequest = protocolMessage.getBody();
+//
+//            // 处理请求
+//            // 构造响应结果对象
+//            RpcResponse rpcResponse = new RpcResponse();
+//
+//            // 获取要调用的服务实现类
+//            Class<?> implClass = LocalRegistry.getService(rpcRequest.getServiceName());
+//            try {
+//                Method method = implClass.getMethod(rpcRequest.getMethodName(), rpcRequest.getParameterTypes());
+//                Object result = method.invoke(implClass.newInstance(), rpcRequest.getArgs());
+//                // 封装返回结果
+//                rpcResponse.setData(result);
+//                rpcResponse.setDataType(method.getReturnType());
+//                rpcResponse.setMessage("ok");
+//            } catch (Exception e) {
+//                e.printStackTrace();
+//                rpcResponse.setMessage(e.getMessage());
+//                rpcResponse.setException(e);
+//            }
+//
+//            // 发送响应， 编码
+//            ProtocolMessage.Header header = new ProtocolMessage.Header();
+//            header.setType((byte) ProtocolMessageTypeEnum.RESPONSE.getKey());
+//            header.setMagic(ProtocolConstant.PROTOCOL_MAGIC);
+//            ProtocolMessage<RpcResponse> responseProtocolMessage = new ProtocolMessage<>(header, rpcResponse);
+//            try {
+//                Buffer encoded = ProtocolMessageEncoder.encode(responseProtocolMessage);
+//                netSocket.write(encoded);
+//            } catch (Exception e) {
+//                throw new RuntimeException("协议消息编码错误");
+//            }
+//        });
+
+        // 原本是在一个socket上绑定了一个 Handler<Buffer> ， 这样就可以处理Buffer， (当有请求的时候)
+        // 这个 Handler类的 handle函数就是 用函数式接口写的
+        // 现在为了解决粘包， 半包
+        // 要先用 RecordParser读取数据， 读取到的数据再用 读取到的数据放到buffer里 传给 Handler类的 handle函数处理
+        // 同时， socket需要一个 Handler
+        // 因此使用装饰器模式
+
+        TcpBufferHandlerWrapper bufferHandlerWrapper = new TcpBufferHandlerWrapper(buffer -> {
             // 接受请求， 解码
             ProtocolMessage<RpcRequest> protocolMessage;
             try {
@@ -92,15 +142,16 @@ public class TcpServerHandler implements Handler<NetSocket> {
             header.setType((byte) ProtocolMessageTypeEnum.RESPONSE.getKey());
             header.setMagic(ProtocolConstant.PROTOCOL_MAGIC);
             ProtocolMessage<RpcResponse> responseProtocolMessage = new ProtocolMessage<>(header, rpcResponse);
+            responseProtocolMessage.calculateBodyLength();
             try {
                 Buffer encoded = ProtocolMessageEncoder.encode(responseProtocolMessage);
-                netSocket.write(encoded);
+                netSocket.write(encoded); //是异步操作 todo 用CompletableFuture实现同步 然后在TcpBufferHandlerWrapper调换重置和执行这个handle的顺序 再测试
             } catch (Exception e) {
                 throw new RuntimeException("协议消息编码错误");
             }
         });
 
-
+        netSocket.handler(bufferHandlerWrapper);
     }
 
     /**

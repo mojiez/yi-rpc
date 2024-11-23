@@ -1,8 +1,12 @@
 package com.atyichen.yirpc.protocol;
 
+import com.atyichen.yirpc.serializer.Serializer;
+import com.atyichen.yirpc.serializer.SerializerFactory;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+
+import java.io.IOException;
 
 /**
  * @author mojie
@@ -22,6 +26,32 @@ public class ProtocolMessage<T> {
      * 消息体 （请求或响应对象）
      */
     private T body;
+
+    public void calculateBodyLength() {
+        if (body == null) {
+            header.setBodyLength(0);
+            return;
+        }
+
+        // 获取序列化器
+        byte serializerType = header.getSerializer();
+        ProtocolMessageSerializerEnum serializerEnum =
+                ProtocolMessageSerializerEnum.getEnumByKey(serializerType);
+        if (serializerEnum == null) {
+            throw new RuntimeException("序列化协议不存在");
+        }
+
+        // 序列化后获取长度
+        Serializer serializer =
+                SerializerFactory.getInstance(serializerEnum.getValue());
+        byte[] bodyBytes = new byte[0];
+        try {
+            bodyBytes = serializer.serialize(body);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+        header.setBodyLength(bodyBytes.length);
+    }
 
     /**
      * 协议消息头
