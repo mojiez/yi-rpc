@@ -7,6 +7,8 @@ import cn.hutool.http.HttpResponse;
 import com.atyichen.yirpc.RpcApplication;
 import com.atyichen.yirpc.config.RpcConfig;
 import com.atyichen.yirpc.constant.RpcConstant;
+import com.atyichen.yirpc.loadbalancer.LoadBalancer;
+import com.atyichen.yirpc.loadbalancer.LoadBalancerFactory;
 import com.atyichen.yirpc.model.RpcRequest;
 import com.atyichen.yirpc.model.RpcResponse;
 import com.atyichen.yirpc.model.ServiceMetaInfo;
@@ -26,7 +28,9 @@ import java.io.IOException;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 
 /**
@@ -131,7 +135,14 @@ public class TcpServiceProxy implements InvocationHandler {
             }
 //            log.info("开始选择服务地址");
             System.out.println("开始选择服务地址");
-            ServiceMetaInfo selectedServiceMetaInfo = serviceMetaInfoList.get(0);
+            // 负载均衡
+            LoadBalancer loadBalancer = LoadBalancerFactory.getInstance(rpcConfig.getLoadBalancer());
+            // 构造负载均衡参数
+            Map<String ,Object> requestParams = new HashMap<>();
+            requestParams.put("methodName", rpcRequest.getMethodName());
+
+            // 使用负载均衡器选出服务节点
+            ServiceMetaInfo selectedServiceMetaInfo = loadBalancer.select(requestParams, serviceMetaInfoList);
 
             // 发送Tcp请求
             RpcResponse rpcResponse = VertxTcpClientApply.doRequest(rpcRequest, selectedServiceMetaInfo, rpcConfig);

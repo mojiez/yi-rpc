@@ -1,5 +1,6 @@
 package com.atyichen.yirpc.config;
 
+import com.atyichen.yirpc.loadbalancer.LoadBalancerKeys;
 import com.atyichen.yirpc.serializer.SerializerKeys;
 import lombok.Data;
 
@@ -27,4 +28,9 @@ public class RpcConfig {
      * 注册中心配置
      */
     private RegistryConfig registryConfig = new RegistryConfig(); // 有默认值
+
+    /**
+     * 负载均衡器
+     */
+    private String loadBalancer = LoadBalancerKeys.ROUND_ROBIN;
 }
