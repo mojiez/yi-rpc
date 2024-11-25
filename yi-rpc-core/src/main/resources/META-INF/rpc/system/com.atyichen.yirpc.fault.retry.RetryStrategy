@@ -1,0 +1,2 @@
+no=com.atyichen.yirpc.fault.retry.NoRetryStrategy
+fixedInterval=com.atyichen.yirpc.fault.retry.FixedIntervalRetryStrategy
