@@ -84,6 +84,7 @@ public class VertxTcpClientApply {
         // CompletableFuture异步转为同步
         try {
             RpcResponse rpcResponse = future.get();
+//            int i = 1/0; 测试 容错机制
             // 关闭连接
             netClient.close();
             return rpcResponse;

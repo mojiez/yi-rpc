@@ -9,6 +9,8 @@ import com.atyichen.yirpc.config.RpcConfig;
 import com.atyichen.yirpc.constant.RpcConstant;
 import com.atyichen.yirpc.fault.retry.RetryStrategy;
 import com.atyichen.yirpc.fault.retry.RetryStrategyFactory;
+import com.atyichen.yirpc.fault.tolerant.TolerantStrategy;
+import com.atyichen.yirpc.fault.tolerant.TolerantStrategyFactory;
 import com.atyichen.yirpc.loadbalancer.LoadBalancer;
 import com.atyichen.yirpc.loadbalancer.LoadBalancerFactory;
 import com.atyichen.yirpc.model.RpcRequest;
@@ -145,13 +147,20 @@ public class TcpServiceProxy implements InvocationHandler {
 
             // 使用负载均衡器选出服务节点
             ServiceMetaInfo selectedServiceMetaInfo = loadBalancer.select(requestParams, serviceMetaInfoList);
-
-            // 使用重试机制
-            RetryStrategy retryStrategy = RetryStrategyFactory.getInstance(rpcConfig.getRetryStrategy());
-            RpcResponse rpcResponse = retryStrategy.doRetry(() -> {
-                    return VertxTcpClientApply.doRequest(rpcRequest, selectedServiceMetaInfo, rpcConfig);
+            RpcResponse rpcResponse;
+            try {
+                // 使用重试机制
+                RetryStrategy retryStrategy = RetryStrategyFactory.getInstance(rpcConfig.getRetryStrategy());
+                rpcResponse = retryStrategy.doRetry(() -> {
+                            return VertxTcpClientApply.doRequest(rpcRequest, selectedServiceMetaInfo, rpcConfig);
                 }
-            );
+                );
+            }catch (Exception e) {
+                // 使用容错机制
+                TolerantStrategy tolerantStrategy = TolerantStrategyFactory.getInstance(rpcConfig.getTolerantStrategy());
+                rpcResponse = tolerantStrategy.doTolerant(null, e);
+            }
+
 //            // 发送Tcp请求
 //            RpcResponse rpcResponse = VertxTcpClientApply.doRequest(rpcRequest, selectedServiceMetaInfo, rpcConfig);
 //            // 发送Tcp请求(使用Vertx发送)

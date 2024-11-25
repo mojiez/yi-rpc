@@ -1,6 +1,7 @@
 package com.atyichen.yirpc.config;
 
 import com.atyichen.yirpc.fault.retry.RetryStrategyKeys;
+import com.atyichen.yirpc.fault.tolerant.TolerantStrategyKeys;
 import com.atyichen.yirpc.loadbalancer.LoadBalancerKeys;
 import com.atyichen.yirpc.serializer.SerializerKeys;
 import lombok.Data;
@@ -39,4 +40,9 @@ public class RpcConfig {
      * 重试策略
      */
     private String retryStrategy = RetryStrategyKeys.NO;
+
+    /**
+     * 容错策略
+     */
+    private String tolerantStrategy = TolerantStrategyKeys.FAIL_FAST;
 }
