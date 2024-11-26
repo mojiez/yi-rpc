@@ -44,7 +44,7 @@ public class RpcApplication {
     /**
      * 框架初始化， 从配置文件中读取
      */
-    private static void init() {
+    public static void init() {
         RpcConfig newRpcConfig = new RpcConfig();
         try {
             newRpcConfig = ConfigUtils.loadConfig(RpcConfig.class, RpcConstant.DEFAULT_CONFIG_PREFIX);

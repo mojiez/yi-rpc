@@ -3,6 +3,7 @@ package com.atyichen.example.consumer;
 import com.atyichen.example.common.model.User;
 import com.atyichen.example.common.service.UserService;
 import com.atyichen.yirpc.RpcApplication;
+import com.atyichen.yirpc.bootstrap.ConsumeBootStrap;
 import com.atyichen.yirpc.config.RpcConfig;
 import com.atyichen.yirpc.constant.RpcConstant;
 import com.atyichen.yirpc.proxy.ServiceProxyFactory;
@@ -19,6 +20,7 @@ public class ConsumerExample {
         tcpConsumer();
     }
     public static void tcpConsumer() {
+        ConsumeBootStrap.init();
         RpcConfig rpcConfig = RpcApplication.getRpcConfig();
         System.out.println(rpcConfig);
 

@@ -16,6 +16,9 @@
     <module>yi-rpc-easy</module>
     <module>vertx-learning</module>
     <module>yi-rpc-core</module>
+    <module>yi-rpc-spring-boot-starter</module>
+    <module>example-springboot-provider</module>
+    <module>example-springboot-consumer</module>
   </modules>
 
   <properties>
